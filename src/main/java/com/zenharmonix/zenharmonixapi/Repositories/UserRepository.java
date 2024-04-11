@@ -1,5 +1,6 @@
-package com.zenharmonix.zenharmonixapi.user;
+package com.zenharmonix.zenharmonixapi.Repositories;
 
+import com.zenharmonix.zenharmonixapi.Models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 

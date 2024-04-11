@@ -1,7 +1,8 @@
-package com.zenharmonix.zenharmonixapi.user;
+package com.zenharmonix.zenharmonixapi.Controllers;
 
+import com.zenharmonix.zenharmonixapi.Models.User;
+import com.zenharmonix.zenharmonixapi.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -9,7 +10,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import java.util.List;
+import com.zenharmonix.zenharmonixapi.Services.JwtUtil;
+
+import java.util.Map;
+import java.util.Optional;
 
 @CrossOrigin
 @RestController
@@ -23,6 +27,9 @@ public class UserController {
         this.userService = userService;
     }
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
     @PostMapping("/signup")
     public ResponseEntity<User> signUpUser(@RequestBody User user){
         User savedUser = userService.saveUser(user);
@@ -31,8 +38,10 @@ public class UserController {
 
     @PostMapping("/signin")
     public ResponseEntity<?> signInUser(@RequestBody User user) {
-        if (userService.checkUserCredentials(user.getEmail(), user.getPassword())) {
-            return ResponseEntity.ok().body("User authenticated successfully");
+        Optional<User> authenticatedUser = userService.authenticateUser(user.getEmail(), user.getPassword());
+        if (authenticatedUser.isPresent()) {
+            String token = jwtUtil.generateToken(authenticatedUser.get());
+            return ResponseEntity.ok().body(Map.of("token", token));
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         }

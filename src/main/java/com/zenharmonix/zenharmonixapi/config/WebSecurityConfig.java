@@ -17,7 +17,7 @@ public class WebSecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/api/v1/user/signup", "/api/v1/user/signin").permitAll()
+                        .requestMatchers("/api/v1/user/signup", "/api/v1/user/signin", "/api/v1/playlists").permitAll()
                         .anyRequest().authenticated()
                 )
                 .httpBasic(withDefaults());
